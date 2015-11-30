@@ -2,7 +2,7 @@
 site template, power by nodejs+grunt, css prefix with LESS
 
 install modules
->> npm install
+> npm install
 
 watch less
 > grunt watch
