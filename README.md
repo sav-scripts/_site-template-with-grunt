@@ -1,5 +1,5 @@
 # site template
-site template, power by nodejs+grunt, css prefix with LESS
+site template, power by nodejs+grunt, css preprocess with LESS
 
 install modules
 > npm install
