@@ -1,7 +1,7 @@
 {
-  "name": "fb-get-photo-with-friend",
-  "description": "select a friend, search from user uploaded photos and find those having selected friend uploaded",
-  "version": "0.1.0",
+  "name": "site template",
+  "description": "site template",
+  "version": "0.0.0",
   "devDependencies":{
     "bower": "~1.2.8",
     "grunt": "~0.4.2",
