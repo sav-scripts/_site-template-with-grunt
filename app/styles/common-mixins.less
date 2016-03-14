@@ -1,4 +1,13 @@
 /** common mixins **/
+.abs-div(@left; @top; @width; @height; @marginLeft:0; @marginTop:0;){
+    position: absolute;
+    left: @left;
+    top: @top;
+    width: @width;
+    height: @height;
+    margin-left: @marginLeft;
+    margin-top: @marginTop;
+}
 .centralized-div(@left; @top; @width; @height; @offsetX:0; @offsetY:0;){
     position: absolute;
     left: @left;
