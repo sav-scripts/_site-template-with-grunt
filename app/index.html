@@ -1,15 +1,43 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <title></title>
+<head lang="zh-Hant-TW">
+    <title>網站標題</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1334">
+
+    <!--<meta name="viewport" content="width=device-width">-->
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">-->
+
+    <script>
+        var clientWidth = screen.width,
+                mobileWidth = 750,
+                pcMinWidth = 1366;
+        //        console.log(clientWidth);
+        //        alert(window.clientWidth);
+
+        var metaTag=document.createElement('meta');
+        metaTag.name = "viewport";
+
+        if(clientWidth > mobileWidth)
+        {
+            metaTag.content = "width=" + pcMinWidth;
+        }
+        else
+        {
+            metaTag.content = "width=device-width";
+        }
+
+        document.getElementsByTagName('head')[0].appendChild(metaTag);
+
+
+
+    </script>
+
 
     <meta property="fb:app_id" content="xxx"/>
-    <meta property="og:title" content="xxx" />
-    <meta property="og:type" content="activity" />
+    <meta property="og:title" content="網站標題" />
+    <meta property="og:type" content="website" />
     <meta property="og:url" content="xxx" />
-    <meta property="og:description" content="xxx" />
+    <meta property="og:description" content="網站描述" />
     <meta property="og:image" content="xxx" />
 
     <link rel="stylesheet" href="styles/main.css">
@@ -18,28 +46,28 @@
 <body onload="Main.init();">
 
 
-    <div id="invisible-container"></div>
-    <div id="scene-container">
+    <!--<div id="invisible-container"></div>-->
+    <div id="main-page">
 
-        <div id="index" resizable="640x320p0x0;1280x640p10x0;1920x1000">
-            <div class="my-image"></div>
+        <div id="index">
         </div>
 
     </div>
 
-    <div id="fb-root"></div>
+    <!--<div id="fb-root"></div>-->
 
+    <script src="js/lib/jquery-3.4.1.min.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/lib/jquery.min.js"><\/script>')</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     <script>window.TweenMax || document.write('<script src="js/lib/TweenMax.min.js"><\/script>')</script>
 
 
     <!-- build:js js/optimized.js -->
-    <script src="js/lib/FBHelper.js"></script>
-    <script src="js/lib/Helper.1.0.2.js"></script>
-    <script src="js/lib/ScalableContent.js"></script>
+    <script src="js/lib/FBHelper.1.0.4.js"></script>
+    <script src="js/lib/Helper.1.0.4.js"></script>
+    <script src="js/lib/ScalableContent.1.0.3.js"></script>
+    <script src="js/lib/Utility.0.0.17.js"></script>
+    <script src="js/lib/Logger.js"></script>
     <script src="js/Main.js"></script>
     <!-- endbuild -->
 

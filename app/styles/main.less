@@ -8,23 +8,17 @@ html {
     margin: 0;
 }
 body{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
+    position: relative;
     background: @background-color;
     padding: 0;
     margin: 0;
 }
-.template-container{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-#scene-container{
-    position: absolute;
-    width: 100%;
-    height: 100%;
+#main-page{
+    position: relative;
+    height: auto;
+    min-width: 1366px;
+    min-height: 100vh;
+
     overflow: hidden;
 }
 #invisible-container{
@@ -58,17 +52,22 @@ body{
 /* index */
 #index {
 
-    .percent-container();
-    left: 50%;
-    top: 50%;
+    position: relative;
+    width: 400px;
+    height: 2500px;
+    background-color: rgba(0, 255, 0, .2);
 
-    .percent-div(my-image, -600, -314, 1900, 628, "sample.png");
-    @media (max-width: 1280px){
-        .percent-div(my-image, -600, -314, 1200, 628, "sample.png");
-    }
-    @media (max-width: 640px){
-        .percent-div(my-image, -300, -157, 600, 314, "sample.png");
-    }
+//    .percent-container();
+//    left: 50%;
+//    top: 50%;
+//
+//    .percent-div(my-image, -600, -314, 1900, 628, "sample.png");
+//    @media (max-width: 1280px){
+//        .percent-div(my-image, -600, -314, 1200, 628, "sample.png");
+//    }
+//    @media (max-width: 640px){
+//        .percent-div(my-image, -300, -157, 600, 314, "sample.png");
+//    }
 
     /*
     .my-image{

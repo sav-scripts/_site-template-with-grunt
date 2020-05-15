@@ -2,7 +2,8 @@ module.exports = function(grunt)
 {
     var pkg = grunt.file.readJSON('package.json');
 
-    var pngquantPlugin = require('imagemin-pngquant');
+    var pngquantPlugin = require('imagemin-pngquant'),
+        mozjpeg = require('imagemin-mozjpeg');
 
     grunt.initConfig
     ({
@@ -36,8 +37,7 @@ module.exports = function(grunt)
                         src: [
                             //'images/*.{png,gif,jpg,svg}',
                             '*.html',
-                            'js/lib/TweenMax.min.js',
-                            'js/lib/jquery.min.js'
+                            'js/lib/**'
                         ],
                         dest: 'dist/app'
                     }
@@ -86,18 +86,22 @@ module.exports = function(grunt)
         watch: {
             less: {
                 files: ['app/styles/*.less'],
-                tasks: ['less:dev']
+                tasks: ['less:dev'],
+                options:
+                {
+                    atBegin: true
+                }
             }
         },
         imagemin: {
             options:{
-                use: [pngquantPlugin()]
+                use: [pngquantPlugin(), mozjpeg()]
             },
             dynamic: {
                 files: [{
                     expand: true,
                     cwd: 'app/images/',
-                    src: ['**/*.{png,jpg,gif}'],
+                    src: ['**/*.{png,jpg,gif}', '!layout/**'],
                     dest: 'dist/app/images/'
                 }]
             }

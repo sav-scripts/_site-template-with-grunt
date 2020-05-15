@@ -547,7 +547,206 @@
         // writing result to canvas.
         resCtx.putImageData(imgRes, offsetX, offsetY);
         return resCV;
-    }
+    };
 
+
+
+
+    Helper.imageToCanvas = function(image, width, height)
+    {
+        var canvas = document.createElement("canvas");
+
+        var scaleRate = 1;
+
+        //var iosFix = Boolean(Main.isiPhone5 && image.width >= 3264 && image.height >= 2448),
+        //    scaleRate = iosFix? .5: 1;
+
+
+        var rw = width;
+        var rh = height;
+
+        canvas.width = rw;
+        canvas.height = rh;
+
+        var ctx = canvas.getContext("2d");
+        var bound = Helper.getSize_cover(rw, rh, image.width, image.height);
+
+        var offsetX = (rw-bound.width)*.5;
+        var offsetY = (rh-bound.height)*.5;
+
+        if(bound.ratio < 1)
+        {
+            $(canvas).detach();
+            canvas = Helper.downScaleImage(image, bound.ratio, offsetX, offsetY, rw, rh);
+        }
+        else
+        {
+            ctx.drawImage(image, 0, 0, image.width, image.height, offsetX, offsetY, bound.width * scaleRate, bound.height);
+        }
+
+        return canvas;
+    };
+
+    Helper.getContextBoundingBox = function(ctx,alphaThreshold)
+    {
+        if (alphaThreshold===undefined) alphaThreshold = 15;
+        var w=ctx.canvas.width,h=ctx.canvas.height;
+        var data = ctx.getImageData(0,0,w,h).data;
+        var x,y,minX,minY,maxX,maxY;
+        o1: for (y=h;y--;)        for (x=w;x--;)           if (data[(w*y+x)*4+3]>alphaThreshold){ maxY=y; break o1 }
+        if (!maxY) return;
+        o2: for (x=w;x--;)        for (y=maxY+1;y--;)      if (data[(w*y+x)*4+3]>alphaThreshold){ maxX=x; break o2 }
+        o3: for (x=0;x<=maxX;++x) for (y=maxY+1;y--;)      if (data[(w*y+x)*4+3]>alphaThreshold){ minX=x; break o3 }
+        o4: for (y=0;y<=maxY;++y) for (x=minX;x<=maxX;++x) if (data[(w*y+x)*4+3]>alphaThreshold){ minY=y; break o4 }
+        return {x:minX,y:minY,maxX:maxX,maxY:maxY,w:maxX-minX,h:maxY-minY};
+    };
+
+    Helper.precentPullToRefresh = function()
+    {
+        /**
+         * inspired by jdduke (http://jsbin.com/qofuwa/2/edit)
+         */
+
+
+        var preventPullToRefresh = (function preventPullToRefresh(lastTouchY) {
+            lastTouchY = lastTouchY || 0;
+            var maybePrevent = false;
+
+            function setTouchStartPoint(event) {
+                lastTouchY = event.touches[0].clientY;
+                // console.log('[setTouchStartPoint]TouchPoint is ' + lastTouchY);
+            }
+            function isScrollingUp(event) {
+                var touchY = event.touches[0].clientY,
+                    touchYDelta = touchY - lastTouchY;
+
+                // console.log('[isScrollingUp]touchYDelta: ' + touchYDelta);
+                lastTouchY = touchY;
+
+                // if touchYDelta is positive -> scroll up
+                if(touchYDelta > 0){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+
+            return {
+                // set touch start point and check whether here is offset top 0
+                touchstartHandler: function(event) {
+                    if(event.touches.length != 1) return;
+                    setTouchStartPoint(event);
+                    maybePrevent = window.pageYOffset === 0;
+                    // console.log('[touchstartHandler]' + maybePrevent);
+                },
+                // reset maybePrevent frag and do prevent
+                touchmoveHandler: function(event) {
+                    if(maybePrevent) {
+                        maybePrevent = false;
+                        if(isScrollingUp(event)) {
+                            // console.log('======Done preventDefault!======');
+                            event.preventDefault();
+                            return;
+                        }
+                    }
+                }
+            }
+        })();
+
+
+        document.addEventListener('touchstart', preventPullToRefresh.touchstartHandler);
+        document.addEventListener('touchmove', preventPullToRefresh.touchmoveHandler);
+    };
+
+    Helper.changeQueryParam = function(uri, key, value)
+    {
+        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + "=" + value + '$2');
+        }
+        else {
+            return uri + separator + key + "=" + value;
+        }
+    };
+
+    Helper.removeURLParameter = function(url, parameter)
+    {
+        //prefer to use l.search if you have a location/link object
+        var urlparts= url.split('?');
+        if (urlparts.length>=2) {
+
+            var prefix= encodeURIComponent(parameter)+'=';
+            var pars= urlparts[1].split(/[&;]/g);
+
+            //reverse iteration as may be destructive
+            for (var i= pars.length; i-- > 0;) {
+                //idiom for string.startsWith
+                if (pars[i].lastIndexOf(prefix, 0) !== -1) {
+                    pars.splice(i, 1);
+                }
+            }
+
+            url= urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : "");
+            return url;
+        } else {
+            return url;
+        }
+    };
+
+    Helper.getParameterByName = function(name, url)
+    {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    };
+
+    Helper.selectIntoArray = function($fromConteinr, selectorOrArray, domArray, $doms)
+    {
+        if(selectorOrArray.constructor === Array)
+        {
+            for(var i=0;i<selectorOrArray.length;i++)
+            {
+                execute(selectorOrArray[i]);
+            }
+        }
+        else
+        {
+            return execute(selectorOrArray);
+        }
+
+
+        function execute(selector)
+        {
+            var $dom = $fromConteinr.find(selector);
+            if($dom.length > 0) domArray.push($dom[0]);
+
+            if($doms) $doms[selector] = $dom;
+
+            return $dom;
+        }
+    };
+
+    Helper.clearElementsStyles = function($dom, styles)
+    {
+        if(!styles)
+        {
+            $dom.attr("style", '');
+        }
+        else
+        {
+            var i;
+            for(i=0;i<styles.length;i++)
+            {
+                $dom.css(styles[i], '');
+            }
+        }
+
+
+    };
 
 }());

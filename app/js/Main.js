@@ -1,27 +1,41 @@
 (function(){
 
     "use strict";
-    var _p = window.Main = {};
-
-    _p.init = function()
+    var self = window.Main =
     {
-        ScalableContent.enableFixFullImage = true;
-        ScalableContent.enableDrawBounds = true;
+        viewport:
+        {
+            width: 0,
+            height: 0,
+            ranges: [640],
+            index: -1,
+            changed: false
+        },
 
-        $(window).on("resize", onResize);
-        onResize();
+        init: function()
+        {
+            if(Utility.urlParams.logger==1)
+            {
+                Logger.init(true).show().open();
+            }
+
+            $(window).on("resize", onResize);
+            onResize();
+        }
     };
 
     function onResize()
     {
-        var width = $(window).width(),
-            height = $(window).height();
+        var oldIndex = self.viewport.index;
 
+        self.viewport.width = window.innerWidth;
+        self.viewport.height = window.innerHeight;
 
-        //ScalableContent.updateView(1280, height);
+        self.viewport.index = self.viewport.width <= self.viewport.ranges[0]? 0: 1;
 
-        ScalableContent.updateView(width, height);
-        ScalableContent.updateResizeAble();
+        console.log(self.viewport.width);
+
+        if(oldIndex !== self.viewport.index) self.viewport.changed = true;
     }
 
 }());

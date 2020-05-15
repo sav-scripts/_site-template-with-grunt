@@ -1,5 +1,9 @@
 /**
- * Created by sav on 2016/4/7.
+ *  resizeable attribute =>
+ *      1920x640p0x0c;(2nd settings...)
+ *      (width)x(height)p(offsetx)x(offsety)c
+ *      with c in end, use dom parent as container for caculating size instead given viewport size
+ *
  */
 (function(){
 
@@ -17,9 +21,14 @@
         enableFixFullImage: true,
         enableDrawBounds: true,
 
+        init: function(viewWidthRanges)
+        {
+            _currentView.viewWidthRanges = viewWidthRanges;
+        },
+
         updateView: function(width, height)
         {
-
+            //console.log("update view: " + width + ", " + height);
             var cv = _currentView,
                 oldModeIndex = cv.modeIndex,
                 index = 0;
@@ -31,6 +40,8 @@
 
             cv.width = width;
             cv.height = height;
+
+            return cv;
 
         },
         updateResizeAble: function()
@@ -114,19 +125,30 @@
 
             for(var i=0;i<array.length;i++)
             {
-                var a3 = array[i].split('p'),
+                var resizeByParent = false;
+                var partString = array[i];
+
+                if(partString.match("c"))
+                {
+                    resizeByParent = true;
+                    partString = partString.replace("c", '');
+                }
+
+                var a3 = partString.split('p'),
                     sizeArray = a3[0]? a3[0].split("x"): [0, 0],
                     paddingArray = a3[1]?  a3[1].split("x"): [0, 0];
 
-                console.log(paddingArray);
+                var hasPadding = paddingArray? true: false;
 
                 dom._viewports.push(
-                {
-                    w:parseInt(sizeArray[0]),
-                    h: parseInt(sizeArray[1]),
-                    paddingW: parseInt(paddingArray[0]),
-                    paddingH: parseInt(paddingArray[1])
-                });
+                    {
+                        w:parseInt(sizeArray[0]),
+                        h: parseInt(sizeArray[1]),
+                        paddingW: parseInt(paddingArray[0]),
+                        paddingH: parseInt(paddingArray[1]),
+                        hasPadding: hasPadding,
+                        resizeByParent: resizeByParent
+                    });
             }
         }
         var bound = dom._viewports[_currentView.modeIndex];
@@ -140,19 +162,29 @@
         if(dom._boundDom)
         {
             $(dom._boundDom).css("width", bound.w+"%").css("height", bound.h+"%").css("left", (-bound.w *.5)+"%").css("top", (-bound.h *.5)+"%");
-            dom._boundDom.textDom.innerHTML = bound.w + " x " + bound.h;
+            var s = bound.w + " x " + bound.h;
+            if(bound.paddingW || bound.paddingH) s = "size: " + s + "</br>padding: " + bound.paddingW + " x " + bound.paddingH;
+            dom._boundDom.textDom.innerHTML = s;
+        }
+
+        var containerWidth = _currentView.width,
+            containerHeight = _currentView.height;
+
+        if(bound.resizeByParent)
+        {
+            var $parent = $dom.parent();
+            containerWidth = $parent.width();
+            containerHeight = $parent.height();
         }
 
         var scale = Helper.getSize_contain(
-            _currentView.width - bound.paddingW*2,
-            _currentView.height - bound.paddingH*2,
+            containerWidth - bound.paddingW*2,
+            containerHeight - bound.paddingH*2,
             bound.w,
             bound.h).ratio;
 
-        console.log("scale = " + scale );
-
         if(scale > 1) scale = 1;
-        $dom.css("width", 100*scale).css("height", 100*scale);
+        $dom.css("width", 100*scale).css("height", 100*scale).css('font-size', 100*scale+'px');
     }
 
     function drawBound($dom, bound)
@@ -161,11 +193,11 @@
 
         var textDom = document.createElement("div");
         textDom.className = "text";
-        textDom.innerHTML = bound.w + " x " + bound.h;
+        //textDom.innerHTML = bound.w + " x " + bound.h;
 
         var dom = document.createElement("div");
         dom.className = "bound";
-        $(dom).css("width", bound.w+"%").css("height", bound.h+"%").css("left", (-bound.w *.5)+"%").css("top", (-bound.h *.5)+"%");
+        $(dom).css("width", bound.w+"%").css("height", bound.h+"%").css("left", (-bound.w *.5)+"%").css("top", (-bound.h *.5)+"%").css("font-size", 16);
         dom.appendChild(textDom);
 
         dom.textDom = textDom;

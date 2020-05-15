@@ -1,9 +1,8 @@
 {
-  "name": "site template",
-  "description": "site template",
+  "name": "site_template",
+  "description": "site_template",
   "version": "0.0.0",
-  "devDependencies":{
-    "bower": "~1.2.8",
+  "devDependencies": {
     "grunt": "~0.4.2",
     "matchdep": "",
     "grunt-contrib-jshint": "",
@@ -20,5 +19,8 @@
     "grunt-contrib-imagemin": "",
     "imagemin-pngquant": "",
     "grunt-newer": ""
+  },
+  "dependencies": {
+    "imagemin-mozjpeg": "^6.0.0"
   }
 }
